@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <pthread.h>
 
 
 typedef struct Node Node; 
@@ -18,12 +19,14 @@ typedef struct linked_list
 {
 	Node *head;
 	int size;
+	pthread_mutex_t lock;
 } linked_list;
 
 static inline struct linked_list *
 ll_create(void)
 {
 	linked_list* ll_ptr = malloc(sizeof(linked_list));
+	pthread_mutex_init(&ll_ptr->lock, NULL);
 	if (ll_ptr == NULL)
 	{
 		return NULL;
@@ -37,24 +40,27 @@ static inline int
 ll_destroy(struct linked_list *ll)
 {
 	if (ll == NULL) return 0;
-
+	pthread_mutex_lock(&ll->lock);
 	if (ll->size == 0)
 	{
 		free(ll);
 		return 1;
 	} 
+	pthread_mutex_unlock(&ll->lock);
 	return 0;
 }
 
 static inline void
 ll_add(struct linked_list *ll, int value)
 {
+	pthread_mutex_lock(&ll->lock);
 	if (ll == NULL) return;
 	Node *temp = malloc(sizeof(Node));
 	temp->value = value;
 	temp->next = ll->head;
 	ll->size += 1;
 	ll->head = temp;
+	pthread_mutex_unlock(&ll->lock);
 }
 
 static inline int
@@ -67,18 +73,21 @@ ll_length(struct linked_list *ll)
 static inline bool
 ll_remove_first(struct linked_list *ll)
 {
+	pthread_mutex_lock(&ll->lock);
 	if (ll == NULL) return false;
 	if (ll->size == 0) return false;
 	Node *temp = ll->head;
 	ll->head = ll->head->next;
 	ll->size -= 1;
 	free(temp);
+	pthread_mutex_unlock(&ll->lock);
 	return true;
 }
 
 static inline int
 ll_contains(struct linked_list *ll, int value)
 {
+	pthread_mutex_lock(&ll->lock);
 	if (ll == NULL) return 0;
 	if (ll->size == 0) return 0;
 	Node* temp = ll->head;
@@ -95,6 +104,7 @@ ll_contains(struct linked_list *ll, int value)
 			ctr++;
 		} 
 	}
+	pthread_mutex_unlock(&ll->lock);
 	return 0;
 }
 
