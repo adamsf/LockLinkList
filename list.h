@@ -71,17 +71,36 @@ ll_length(struct linked_list *ll)
 }
 
 static inline bool
-ll_remove_first(struct linked_list *ll)
+ll_remove(struct linked_list *ll, int key)
 {
 	pthread_mutex_lock(&ll->lock);
 	if (ll == NULL) return false;
 	if (ll->size == 0) return false;
 	Node *temp = ll->head;
-	ll->head = ll->head->next;
-	ll->size -= 1;
-	free(temp);
+	if (temp->value == key)
+	{
+		ll->size -= 1;
+		temp = temp->next;
+		free(temp);
+		pthread_mutex_unlock(&ll->lock);
+		return true;
+	}
+	while (temp->next != NULL)
+	{
+		Node* toRemove = temp->next;
+		if (toRemove->value == key)
+		{
+			temp->next = toRemove->next;
+			ll->size -= 1;
+			free(toRemove);
+			pthread_mutex_unlock(&ll->lock);
+			return true;
+		}
+		temp = temp->next;
+	}
+	//the value was not removed 
 	pthread_mutex_unlock(&ll->lock);
-	return true;
+	return false;
 }
 
 static inline int
