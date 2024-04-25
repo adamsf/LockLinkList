@@ -1,25 +1,13 @@
-# Homework 1: simple linked list
+# Homework 5: mutex lock linked list
+## Francis Adams and Henry Burke
 
-The following should work when you are done with your assignment:
+To compile our code on on the Lab Machines:
 
-```
-$ make
-$ ./test
-$ make clean
-```
-
-Your `main.c` must include a comprehensive test suite.
-We will test with our own `main.c` by doing:
-
-```
-$ mv main.c main.c.saved
-$ cp ../ourmain.c main.c
-$ make
-$ ./test
-...our unit tests run here
-$ mv main.c.saved main.c
-```
-
-## Specification
-
-Please see `csci3411_hw1.pdf` for the homework specification.
+- download our .zip file onto the machine, the files contained within it should be list.h, testParallel.c, and the Makefile
+- Run make in the terminal. This will compile the necessary files for testing
+- run the test.exe executable in the command line. Assuming our implementation is correct, this will show the following:
+- - the linked list being created
+  - the threads being created
+  - items being concurrently added and removed from the linked list
+  - the linked list being deleted
+  - output corresponding to all of the above in the terminal 
