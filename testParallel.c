@@ -16,9 +16,10 @@ struct linked_list *ll;
 void* thread_func(void* arg) {
 
     linked_list* ll = (linked_list*)arg;
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 10; i++) {
         ll_add(ll, i);
         assert(ll_contains(ll, i) > 0);
+        printf("length: %d\n", ll_length(ll));
         ll_remove(ll, i);
     }
     return NULL;
@@ -29,22 +30,32 @@ void* thread_func(void* arg) {
 int main(void)
 {
     ll = ll_create();   
-    pthread_t threads[NUM_THREADS];
-    printf("length of ll: %d\n", ll_length(ll));
+    // pthread_t threads[NUM_THREADS];
+    // printf("length of ll: %d\n", ll_length(ll));
 
-    for (int i = 0; i < NUM_THREADS; i++) {
-        pthread_create(&threads[i], NULL, thread_func, &ll);
+    // for (int i = 0; i < NUM_THREADS; i++) {
+    //     pthread_create(&threads[i], NULL, thread_func, &ll);
+    // }
+
+    // for (int i = 0; i < NUM_THREADS; i++) {
+    //     pthread_join(threads[i], NULL);
+    //     printf("Thread %d joined\n", i);
+    // }
+
+    // printf("length %d\n", ll_length(ll));
+    // //assert(ll_length(ll) == 0);
+    // //ll_destroy(ll);
+    ll_add(ll, 1);
+    ll_add(ll, 2);
+    ll_add(ll, 3);
+    ll_remove(ll, 3);
+    Node* temp = ll->head;
+    for (int i = 0; i < ll_length(ll); i++)
+    {
+        printf("[%d]->", temp->value);
+        temp = temp->next;
     }
-
-    for (int i = 0; i < NUM_THREADS; i++) {
-        pthread_join(threads[i], NULL);
-        printf("Thread %d joined\n", i);
-    }
-
-    printf("length %d\n", ll_length(ll));
-    //assert(ll_length(ll) == 0);
-    //ll_destroy(ll);
-
+    printf("[Null]\n");
     return 0;
 }
 

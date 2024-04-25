@@ -81,12 +81,13 @@ ll_remove(struct linked_list *ll, int key)
 	if (ll == NULL) return false;
 	if (ll->size == 0) return false; //moved lock below this
 	Node *temp = ll->head;
-	if (temp->value == key)
+	if (ll->head->value == key)
 	{
 		ll->size -= 1;
-		Node* prevtemp = temp;
-		temp = temp->next;
+		Node* prevhead = ll->head;
+		ll->head = ll->head->next;
 		pthread_mutex_unlock(&ll->lock);
+		free(prevhead);
 		return true;
 	}
 	while (temp->next != NULL)
