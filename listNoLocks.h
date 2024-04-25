@@ -19,14 +19,12 @@ typedef struct linked_list
 {
 	Node *head;
 	int size;
-	pthread_mutex_t lock;
 } linked_list;
 
 static inline struct linked_list *
 ll_create(void)
 {
 	linked_list* ll_ptr = malloc(sizeof(linked_list));
-	pthread_mutex_init(&ll_ptr->lock, NULL);
 	if (ll_ptr == NULL)
 	{
 		return NULL;
@@ -40,14 +38,11 @@ static inline int
 ll_destroy(struct linked_list *ll)
 {
 	if (ll == NULL) return 0;
-	pthread_mutex_lock(&ll->lock);
 	if (ll->size == 0)
 	{
-		pthread_mutex_unlock(&ll->lock);
 		free(ll);
 		return 1;
 	} 
-	pthread_mutex_unlock(&ll->lock);
 	return 0;
 }
 
@@ -57,12 +52,10 @@ ll_add(struct linked_list *ll, int value)
 	
 	if (ll == NULL) return;
 	Node *temp = malloc(sizeof(Node)); //moved lock below this
-	pthread_mutex_lock(&ll->lock);
-	temp->value = value;
-	temp->next = ll->head;
-	ll->size += 1;
-	ll->head = temp;
-	pthread_mutex_unlock(&ll->lock);
+	temp -> value = value;
+    do {
+        temp -> next = ll -> head;
+    }while(__sync_bool_compare_and_swap(&ll -> head, temp -> next, temp) == 0);
 }
 
 static inline int
@@ -80,14 +73,12 @@ ll_remove(struct linked_list *ll, int key)
 	
 	if (ll == NULL) return false;
 	if (ll->size == 0) return false; //moved lock below this
-	pthread_mutex_lock(&ll->lock);
 	Node *temp = ll->head;
 	if (temp->value == key)
 	{
 		ll->size -= 1;
 		Node* prevtemp = temp;
 		temp = temp->next;
-		pthread_mutex_unlock(&ll->lock);
 		free(prevtemp);
 		return true;
 	}
@@ -98,16 +89,15 @@ ll_remove(struct linked_list *ll, int key)
 		{
 			temp->next = toRemove->next;
 			ll->size -= 1;
-			pthread_mutex_unlock(&ll->lock);
 			free(toRemove);
 			return true;
 		}
 		temp = temp->next;
 	}
 	//the value was not removed 
-	pthread_mutex_unlock(&ll->lock);
 	return false;
 }
+
 
 static inline int
 ll_contains(struct linked_list *ll, int value)
@@ -116,17 +106,12 @@ ll_contains(struct linked_list *ll, int value)
 	if (ll == NULL) return 0;
 	if (ll->size == 0) return 0; //moved lock below this
 	
-	pthread_mutex_lock(&ll->lock);
-	//printf("inside contains\n");
 	Node* temp = ll->head;
-	
 	int ctr = 1;
 	while (temp != NULL)
 	{
-		//printf("temp->value: %d\n", temp->value);
 		if (temp->value == value)
 		{
-			pthread_mutex_unlock(&ll->lock);
 			return ctr;
 		}
 		else 
@@ -135,7 +120,6 @@ ll_contains(struct linked_list *ll, int value)
 			ctr++;
 		} 
 	}
-	pthread_mutex_unlock(&ll->lock);
 	return 0;
 }
 

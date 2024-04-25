@@ -1,10 +1,12 @@
 #include "list.h"
+//#include "listNoLocks.h"
 #include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
 
-#define NUM_THREADS 2
+
+#define NUM_THREADS 10
 
 pthread_t thread1;
 pthread_t thread2;
@@ -23,8 +25,20 @@ void *firstThing()
     return NULL;
 }
 
-void *secondThing(){
-    //ll_remove_first(ll);
+void* thread_func(void* arg) {
+
+    printf("running thread\n");
+    linked_list* ll = (linked_list*)arg;
+    ll_add(ll, 1);
+    ll_add(ll, 2);
+    ll_add(ll, 3);
+    ll_contains(ll,1);
+    ll_remove(ll, 1);
+    ll_remove(ll, 2);
+    assert(ll_contains(ll, 3) == 1);
+    assert(ll_contains(ll, 1) == 0);
+    assert(ll_contains(ll, 2) == 0);
+    
     return NULL;
 }
 
@@ -32,14 +46,17 @@ void *secondThing(){
 //Create test suite to test linked list lock saftey
 int main(void)
 {
-    ll = ll_create();
-    pthread_create(&thread1, NULL, firstThing, NULL);
-    pthread_create(&thread2, NULL, secondThing, NULL);
+    ll = ll_create();   
+    pthread_t threads[NUM_THREADS];
 
-    pthread_join(thread1, NULL);
-    pthread_join(thread2, NULL);
-    printf("LL contains 1: %d\n", ll_contains(ll, 3));
+    for (int i = 0; i < NUM_THREADS; i++) {
+        pthread_create(&threads[i], NULL, thread_func, &ll);
+    }
 
+    for (int i = 0; i < NUM_THREADS; i++) {
+        pthread_join(threads[i], NULL);
+        printf("Thread %d joined\n", i);
+    }
 
 
     
