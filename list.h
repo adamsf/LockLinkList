@@ -43,6 +43,7 @@ ll_destroy(struct linked_list *ll)
 	pthread_mutex_lock(&ll->lock);
 	if (ll->size == 0)
 	{
+		pthread_mutex_unlock(&ll->lock);
 		free(ll);
 		return 1;
 	} 
@@ -84,9 +85,10 @@ ll_remove(struct linked_list *ll, int key)
 	if (temp->value == key)
 	{
 		ll->size -= 1;
+		Node* prevtemp = temp;
 		temp = temp->next;
-		free(temp);
 		pthread_mutex_unlock(&ll->lock);
+		free(prevtemp);
 		return true;
 	}
 	while (temp->next != NULL)
@@ -96,8 +98,8 @@ ll_remove(struct linked_list *ll, int key)
 		{
 			temp->next = toRemove->next;
 			ll->size -= 1;
-			free(toRemove);
 			pthread_mutex_unlock(&ll->lock);
+			free(toRemove);
 			return true;
 		}
 		temp = temp->next;
