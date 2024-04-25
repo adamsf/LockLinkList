@@ -9,8 +9,6 @@
 
 #define NUM_THREADS 10
 
-pthread_t thread1;
-pthread_t thread2;
 struct linked_list *ll;
 
 
@@ -20,6 +18,8 @@ void* thread_func(void* arg) {
     linked_list* ll = (linked_list*)arg;
     for (int i = 0; i < 100; i++) {
         ll_add(ll, i);
+        assert(ll_contains(ll, i) > 0);
+        ll_remove(ll, i);
     }
     return NULL;
 }

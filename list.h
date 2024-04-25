@@ -87,7 +87,6 @@ ll_remove(struct linked_list *ll, int key)
 		Node* prevtemp = temp;
 		temp = temp->next;
 		pthread_mutex_unlock(&ll->lock);
-		free(prevtemp);
 		return true;
 	}
 	while (temp->next != NULL)
