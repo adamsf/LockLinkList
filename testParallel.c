@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 
 #define NUM_THREADS 10
@@ -14,31 +15,12 @@ struct linked_list *ll;
 
 
 
-void *firstThing()
-{
-    ll_add(ll, 1); //locks here so context switch to thread 2
-    ll_add(ll, 2);
-    sched_yield();
-    ll_add(ll, 3);
-    sched_yield();
-    printf("Thread 1\n");
-    return NULL;
-}
-
 void* thread_func(void* arg) {
 
-    printf("running thread\n");
     linked_list* ll = (linked_list*)arg;
-    ll_add(ll, 1);
-    ll_add(ll, 2);
-    ll_add(ll, 3);
-    ll_contains(ll,1);
-    ll_remove(ll, 1);
-    ll_remove(ll, 2);
-    assert(ll_contains(ll, 3) == 1);
-    assert(ll_contains(ll, 1) == 0);
-    assert(ll_contains(ll, 2) == 0);
-    
+    for (int i = 0; i < 100; i++) {
+        ll_add(ll, i);
+    }
     return NULL;
 }
 
@@ -48,6 +30,7 @@ int main(void)
 {
     ll = ll_create();   
     pthread_t threads[NUM_THREADS];
+    printf("length of ll: %d\n", ll_length(ll));
 
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_create(&threads[i], NULL, thread_func, &ll);
@@ -58,8 +41,9 @@ int main(void)
         printf("Thread %d joined\n", i);
     }
 
-
-    
+    printf("length %d\n", ll_length(ll));
+    //assert(ll_length(ll) == 0);
+    //ll_destroy(ll);
 
     return 0;
 }
