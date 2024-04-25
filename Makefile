@@ -1,7 +1,7 @@
 CC     = gcc
 INC    = -I.
-CFLAGS = $(INC) -Wall -Wextra -Werror -O3
-CFILES = $(wildcard *.c)
+CFLAGS = $(INC) -Wall -Wextra -Werror
+CFILES = $(wildcard testParallel.c)
 OBJS   = $(patsubst %.c, %.o,$(CFILES))
 BIN    = test
 

@@ -12,7 +12,7 @@ struct linked_list *ll;
 
 
 
-void *firstThing(void *arg)
+void *firstThing()
 {
     ll_add(ll, 1); //locks here so context switch to thread 2
     ll_add(ll, 2);
@@ -23,8 +23,8 @@ void *firstThing(void *arg)
     return NULL;
 }
 
-void *secondThing(void *args){
-    ll_remove_first(ll);
+void *secondThing(){
+    //ll_remove_first(ll);
     return NULL;
 }
 

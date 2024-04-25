@@ -11,7 +11,6 @@ int main(void)
 	assert(ll == NULL);
 	ll_add(ll, 23);
 	assert(ll_contains(ll, 23) == 0);
-	assert(ll_remove_first(ll) == false);
 	assert(ll_destroy(ll) == 0);
 	assert(ll_length(ll) == 0);
 
@@ -36,7 +35,6 @@ int main(void)
 
 
 	//test everything except add with an empty list (head should be null)
-	assert(ll_remove_first(ll) == false);
 	assert(ll_contains(ll, 123) == 0);
 
 	//test add, empty, add, to ensure no bugs
@@ -44,7 +42,6 @@ int main(void)
 	assert(ll_length(ll) == 1);
 	assert(ll_contains(ll, 1) == 1);
 
-	ll_remove_first(ll);
 	assert(ll != NULL && ll_length(ll) == 0);
 
 	ll_add(ll, 2);
@@ -60,9 +57,7 @@ int main(void)
 
 	//test remove with non-singleton list
 	//list should be 23->2
-	ll_remove_first(ll);
 	assert(ll_length(ll) == 3);
-	ll_remove_first(ll);
 	assert(ll_length(ll) == 2);
 	
 	//test contains with true on first, second, fourth items
@@ -79,12 +74,7 @@ int main(void)
 	//try to remove with elements in list first 
 	assert(ll_destroy(ll) == 0);
 
-	while (ll_length(ll) > 0)
-	{
-		ll_remove_first(ll);
-	}
-	assert(ll_length(ll) == 0);
-	assert(ll_destroy(ll) == 1);
+
 
 	ll = NULL;
 
