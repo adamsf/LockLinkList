@@ -53,9 +53,10 @@ ll_destroy(struct linked_list *ll)
 static inline void
 ll_add(struct linked_list *ll, int value)
 {
-	pthread_mutex_lock(&ll->lock);
+	
 	if (ll == NULL) return;
-	Node *temp = malloc(sizeof(Node));
+	Node *temp = malloc(sizeof(Node)); //moved lock below this
+	pthread_mutex_lock(&ll->lock);
 	temp->value = value;
 	temp->next = ll->head;
 	ll->size += 1;
@@ -66,16 +67,19 @@ ll_add(struct linked_list *ll, int value)
 static inline int
 ll_length(struct linked_list *ll)
 {
+	//should always give accurate response
 	if (ll == NULL) return 0;
 	return ll->size;
 }
 
+//need to support removal from anywhere in the list not just front
 static inline bool
 ll_remove_first(struct linked_list *ll)
 {
-	pthread_mutex_lock(&ll->lock);
+	
 	if (ll == NULL) return false;
-	if (ll->size == 0) return false;
+	if (ll->size == 0) return false; //moved lock below this
+	pthread_mutex_lock(&ll->lock);
 	Node *temp = ll->head;
 	ll->head = ll->head->next;
 	ll->size -= 1;
@@ -87,9 +91,10 @@ ll_remove_first(struct linked_list *ll)
 static inline int
 ll_contains(struct linked_list *ll, int value)
 {
-	pthread_mutex_lock(&ll->lock);
+	
 	if (ll == NULL) return 0;
-	if (ll->size == 0) return 0;
+	if (ll->size == 0) return 0; //moved lock below this
+	pthread_mutex_lock(&ll->lock);
 	Node* temp = ll->head;
 	int ctr = 1;
 	while (temp != NULL)
