@@ -30,7 +30,7 @@ int main(void)
     pthread_create(&thread1, NULL, firstThing, NULL);
     pthread_create(&thread2, NULL, secondThing, NULL);
     ll = ll_create();
-
+    printf("threads created");
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
 
