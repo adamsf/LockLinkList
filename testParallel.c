@@ -35,7 +35,6 @@ int main(void)
     ll = ll_create();
     pthread_create(&thread1, NULL, firstThing, NULL);
     pthread_create(&thread2, NULL, secondThing, NULL);
-    
 
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
