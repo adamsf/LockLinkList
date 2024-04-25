@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 
-#define NUM_THREADS 10
+#define NUM_THREADS 30
 
 struct linked_list *ll;
 
@@ -30,7 +30,7 @@ int main(void)
 {
     ll = ll_create();   
     pthread_t threads[NUM_THREADS];
-    printf("length of ll: %d\n", ll_length(ll));
+    //printf("length of ll: %d\n", ll_length(ll));
 
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_create(&threads[i], NULL, thread_func, &ll);
@@ -38,13 +38,14 @@ int main(void)
 
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_join(threads[i], NULL);
-        printf("Thread %d joined\n", i);
+        //printf("Thread %d joined\n", i);
     }
 
-    printf("length %d\n", ll_length(ll));
-    //assert(ll_length(ll) == 0);
-    //ll_destroy(ll);
+    //printf("length %d\n", ll_length(ll));
+    assert(ll_length(ll) == 0);
+    ll_destroy(ll);
 
+    printf("Linked list implementation is thread safe\n");
     return 0;
 }
 
