@@ -1,5 +1,5 @@
-#ifndef LIST_H
-#define LIST_H
+#ifndef LISTNOLOCKS_H
+#define LISTNOLOCKS_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -7,24 +7,24 @@
 #include <pthread.h>
 
 
-typedef struct Node Node; 
+typedef struct Node Node_lockless; 
 struct Node 
 {
 	int value;
-	Node *next;
+	Node_lockless *next;
 };
 
 
-typedef struct linked_list
+typedef struct linked_list_lockless
 {
-	Node *head;
+	Node_lockless *head;
 	int size;
-} linked_list;
+} linked_list_lockless;
 
-static inline struct linked_list *
+static inline struct linked_list_lockless *
 ll_create(void)
 {
-	linked_list* ll_ptr = malloc(sizeof(linked_list));
+	linked_list_lockless* ll_ptr = malloc(sizeof(linked_list_lockless));
 	if (ll_ptr == NULL)
 	{
 		return NULL;
@@ -35,7 +35,7 @@ ll_create(void)
 }
 
 static inline int
-ll_destroy(struct linked_list *ll)
+ll_destroy(struct linked_list_lockless *ll)
 {
 	if (ll == NULL) return 0;
 	if (ll->size == 0)
@@ -47,11 +47,11 @@ ll_destroy(struct linked_list *ll)
 }
 
 static inline void
-ll_add(struct linked_list *ll, int value)
+ll_add(struct linked_list_lockless *ll, int value)
 {
 	
 	if (ll == NULL) return;
-	Node *temp = malloc(sizeof(Node)); //moved lock below this
+	Node_lockless *temp = malloc(sizeof(Node)); //moved lock below this
 	temp -> value = value;
     do {
         temp -> next = ll -> head;
@@ -73,18 +73,18 @@ ll_remove(struct linked_list *ll, int key)
 	
 	if (ll == NULL) return false;
 	if (ll->size == 0) return false; //moved lock below this
-	Node *temp = ll->head;
+	Node_lockless *temp = ll->head;
 	if (temp->value == key)
 	{
 		ll->size -= 1;
-		Node* prevtemp = temp;
+		Node_lockless* prevtemp = temp;
 		temp = temp->next;
 		free(prevtemp);
 		return true;
 	}
 	while (temp->next != NULL)
 	{
-		Node* toRemove = temp->next;
+		Node_lockless* toRemove = temp->next;
 		if (toRemove->value == key)
 		{
 			temp->next = toRemove->next;
@@ -100,13 +100,13 @@ ll_remove(struct linked_list *ll, int key)
 
 
 static inline int
-ll_contains(struct linked_list *ll, int value)
+ll_contains(struct linked_list_lockless *ll, int value)
 {
 	
 	if (ll == NULL) return 0;
 	if (ll->size == 0) return 0; //moved lock below this
 	
-	Node* temp = ll->head;
+	Node_lockless* temp = ll->head;
 	int ctr = 1;
 	while (temp != NULL)
 	{

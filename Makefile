@@ -13,7 +13,7 @@ $(BIN):$(OBJS)
 	$(CC) -o $@ $^
 
 exec:$(BIN)
-	./test
+	./testLockless
 
 clean:
 	@rm -f $(BIN) $(OBJS) *~
