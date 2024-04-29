@@ -14,7 +14,6 @@ struct Node_lockless
 	int value;
 	Node_lockless *next;
 	bool deleted;
-	int ref_counter;
 };
 
 
@@ -41,7 +40,7 @@ static inline int
 lll_destroy(struct linked_list_lockless *ll)
 {
 	if (ll == NULL) return 0;
-	if (ll->size == 0)
+	if (atomic_load(&ll->size) == 0)
 	{
 		free(ll);
 		return 1;
@@ -55,12 +54,12 @@ lll_add(struct linked_list_lockless *ll, int value)
 	
 	if (ll == NULL) return;
 	Node_lockless *temp = malloc(sizeof(Node_lockless)); //moved lock below this
-	temp->ref_counter = 1;
 	temp->deleted = false;
 	temp -> value = value;
     do {
         temp -> next = ll -> head;
     }while(__sync_bool_compare_and_swap(&ll -> head, temp -> next, temp) == 0);
+	atomic_fetch_add(&ll->size, 1);
 }
 
 static inline int
@@ -117,10 +116,9 @@ lll_contains(struct linked_list_lockless *ll, int value)
 {
 	
 	if (ll == NULL) return 0;
-	if (ll->size == 0) return 0; //moved lock below this
+	if (atomic_load(&ll->size) == 0) return 0; //moved lock below this
 	
 	Node_lockless* temp = ll->head;
-	Node *prev = NULL;
 	int ctr = 1;
 	while (temp != NULL)
 	{
@@ -128,10 +126,10 @@ lll_contains(struct linked_list_lockless *ll, int value)
 		{
 			return ctr;
 		}
-		prev = temp;
 		temp = temp->next;
 		ctr++;
 	}
+	return 0;
 }
 
 #endif

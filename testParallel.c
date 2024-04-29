@@ -26,11 +26,12 @@ void* thread_func(void* arg) {
 
 void* thread_func2(void* arg) {
 
-    linked_list_lockless* ll = (linked_list_lockless*)arg;
-    for (int i = 0; i < 100; i++) {
-        lll_add(ll, i);
-        //printf("%d\n", lll_contains(ll, i));
-        //lll_remove(ll, i);
+    linked_list_lockless* lll = (linked_list_lockless*)arg;
+    for (int i = 0; i < 10; i++) {
+
+        lll_add(lll, i);
+        assert(lll_contains(lll, i) > 0);
+        lll_remove(lll, i);
     }
     return NULL;
 }
@@ -66,10 +67,10 @@ int main(void)
 
     for (int i = 0; i < NUM_THREADS; i++) {
         pthread_join(threads[i], NULL);
-        printf("Thread %d joined\n", i);
+        //printf("Thread %d joined\n", i);
     }
 
-    printf("length of list lll: %d", lll_length(lll));
+    //printf("length of list lll: %d", lll_length(lll));
 
 
     printf("Linked list implementation is thread safe\n");
