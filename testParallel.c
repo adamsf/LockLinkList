@@ -1,5 +1,5 @@
 #include "list.h"
-//#include "listNoLocks.h"
+#include "listNoLocks.h"
 #include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -11,11 +11,22 @@
 
 struct linked_list *ll;
 
-
+struct linked_list_lockless *lll;
 
 void* thread_func(void* arg) {
 
     linked_list* ll = (linked_list*)arg;
+    for (int i = 0; i < 100; i++) {
+        ll_add(ll, i);
+        assert(ll_contains(ll, i) > 0);
+        ll_remove(ll, i);
+    }
+    return NULL;
+}
+
+void* thread_func2(void* arg) {
+
+    linked_list_lockless* ll = (linked_list_lockless*)arg;
     for (int i = 0; i < 100; i++) {
         ll_add(ll, i);
         assert(ll_contains(ll, i) > 0);
