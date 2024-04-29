@@ -34,7 +34,6 @@ lll_create(void)
 	}
 	ll_ptr->head = NULL;
 	atomic_init(&ll_ptr->size, 0);
-	printf("initial size of lll: %d\n", ll_ptr->size);
 	return ll_ptr;
 }
 
@@ -62,8 +61,6 @@ lll_add(struct linked_list_lockless *ll, int value)
     do {
         temp -> next = ll -> head;
     }while(__sync_bool_compare_and_swap(&ll -> head, temp -> next, temp) == 0);
-	atomic_fetch_add(&ll->size, 1);
-	//printf("%d\n", ll->head->value);
 }
 
 static inline int
@@ -71,7 +68,6 @@ lll_length(struct linked_list_lockless *ll)
 {
 	//should always give accurate response
 	if (ll == NULL) return 0;
-	printf("size of lll: %d vs %d\n", atomic_load(&ll->size), ll->size);
 	return atomic_load(&ll->size);
 }
 
@@ -124,20 +120,18 @@ lll_contains(struct linked_list_lockless *ll, int value)
 	if (ll->size == 0) return 0; //moved lock below this
 	
 	Node_lockless* temp = ll->head;
+	Node *prev = NULL;
 	int ctr = 1;
 	while (temp != NULL)
 	{
-		if (temp->value == value)
+		if (temp->value == value && temp->deleted == false)
 		{
 			return ctr;
 		}
-		else 
-		{
-			temp = temp->next;
-			ctr++;
-		} 
+		prev = temp;
+		temp = temp->next;
+		ctr++;
 	}
-	return 0;
 }
 
 #endif
