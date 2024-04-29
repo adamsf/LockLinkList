@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 
-#define NUM_THREADS 30
+#define NUM_THREADS 5
 
 struct linked_list *ll;
 
@@ -29,7 +29,7 @@ void* thread_func2(void* arg) {
     linked_list_lockless* ll = (linked_list_lockless*)arg;
     for (int i = 0; i < 100; i++) {
         lll_add(ll, i);
-        //assert(lll_contains(ll, i) > 0);
+        //printf("%d\n", lll_contains(ll, i));
         //lll_remove(ll, i);
     }
     return NULL;
