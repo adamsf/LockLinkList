@@ -7,8 +7,8 @@
 #include <pthread.h>
 
 
-typedef struct Node Node_lockless; 
-struct Node 
+typedef struct Node_lockless Node_lockless; 
+struct Node_lockless
 {
 	int value;
 	Node_lockless *next;
@@ -53,7 +53,7 @@ lll_add(struct linked_list_lockless *ll, int value)
 {
 	
 	if (ll == NULL) return;
-	Node_lockless *temp = malloc(sizeof(Node)); //moved lock below this
+	Node_lockless *temp = malloc(sizeof(Node_lockless)); //moved lock below this
 	temp->ref_counter = 1;
 	temp->deleted = false;
 	temp -> value = value;
@@ -63,16 +63,16 @@ lll_add(struct linked_list_lockless *ll, int value)
 }
 
 static inline int
-lll_length(struct linked_list *ll)
+lll_length(struct linked_list_lockless *ll)
 {
 	//should always give accurate response
 	if (ll == NULL) return 0;
-	retrun ll->size;
+	return ll->size;
 }
 
 //need to support removal from anywhere in the list not just front
 static inline bool
-lll_remove(struct linked_list *ll, int key)
+lll_remove(struct linked_list_lockless *ll, int key)
 {
 	
 	if (ll == NULL) return false;
