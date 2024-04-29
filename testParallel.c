@@ -28,9 +28,9 @@ void* thread_func2(void* arg) {
 
     linked_list_lockless* ll = (linked_list_lockless*)arg;
     for (int i = 0; i < 100; i++) {
-        ll_add(ll, i);
-        assert(ll_contains(ll, i) > 0);
-        ll_remove(ll, i);
+        lll_add(ll, i);
+        assert(lll_contains(ll, i) > 0);
+        lll_remove(ll, i);
     }
     return NULL;
 }
